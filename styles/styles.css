@@ -14,7 +14,7 @@ paleta de colores
 
 */
 
-
+/* 
 *{
     margin:0;
     padding: 0;
@@ -26,23 +26,47 @@ paleta de colores
 .header{
     height: 100%;
     padding: 2% auto;
+    background-color: #6089BF;
+    color: #f2f2f2;
 
-    ol{
+    ul{
         list-style: none;
         display: flex;
         justify-content: center;
     }
-}
 
-.titulo{
-    font-size: 2.5rem;
-    text-align: center;
-}
+    li{
+        padding: 10px;
+    }
 
-.main{
+    a {
+    color: #f2f2f2;
     
-    background-color: #F0F2DC;
-    height: 100%;
+    }
+    
+    /* a:link {
+        color: #f2f2f2;
+    }
+    
+    a:visited {
+        color:
+    }
+    
+    a:focus {
+    }
+    
+    a:hover {
+    }
+    
+    a:active {
+    } */
+
+    .titulo{
+        font-size: 2.5rem;
+        text-align: center;
+        color: #f2f2f2;
+    }
+    
 }
 
 .fondo{
@@ -54,14 +78,37 @@ paleta de colores
     display: flex;
     justify-content: center;
     flex-direction: column;
+    align-items: center;
+
+    h2, h3{
+        color: #f2f2f2;
+    }
+
+    button{
+        width: 20%;
+        padding: 10px;
+    }
 }
 
-li{
-    padding: 30px;
-    margin: 10px;
-    background-color:#F2F2F2;
-    border: 1px solid black;
-} 
+
+.main{
+    
+    background-color: #F0F2DC;
+    height: 100%;
+
+    li{
+        list-style: none;
+        padding: 30px;
+        margin: 10px;
+        background-color:#F2F2F2;
+        border: 1px solid black;
+    } 
+
+}
+
+
+
+
 
 section{
     text-align: center;
@@ -76,8 +123,53 @@ ul{
     display: inline;
 }
 
+.footer{
+    background-color: #9CB6D9 ;
 
+    li{
+        list-style: none;
+    }
+} */
 
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body{
+    width: 100%;
+    overflow: hidden;
+    position: relative;
+}
+
+section{
+    width: 100%;
+    height: 100vh;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+}
+
+#img-1{
+    position:absolute;
+    top: 0;
+    left: 0;
+    width: 50%;
+    height: 100%;
+    background: url(../assets/img/air_force_1_reducido_6003.jpg) center no-repeat fixed;
+    background-size: cover ;
+    z-index: 1;
+}
+
+#img-2{
+    width: 100%;
+    height: 100%;
+    /* position: fixed; */
+    background: url(../assets/img/JJK_full_extizq.jpg) center no-repeat ;
+    background-size: cover;
+    z-index: 1;
+}
 
 
 
