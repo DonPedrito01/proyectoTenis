@@ -1,29 +1,59 @@
 
 
-/* *{
+
+/*
+
+paleta de colores 
+
+#6089BF
+#9CB6D9
+#F0F2DC
+#F2F2F2
+#595959
+
+
+*/
+
+
+*{
     margin:0;
     padding: 0;
+    box-sizing: border-box;
     font-family: "Poppins";
     color:#595959;
 }
 
-header{
-    height: 30vh;
+.header{
+    height: 100%;
+    padding: 2% auto;
+
+    ol{
+        list-style: none;
+        display: flex;
+        justify-content: center;
+    }
 }
 
-h1{
+.titulo{
+    font-size: 2.5rem;
     text-align: center;
 }
 
-main{
-    padding: 20%;
+.main{
+    
     background-color: #F0F2DC;
-    height: 30vw;
+    height: 100%;
 }
 
-ul{
+.fondo{
+    background-image: linear-gradient(rgba(5,7,12,0.75), rgba(5,7,12,0.75)),
+    url(../assets/img/105603535_286485952470704_5507790349167209405_n.png);
+
+    background-size: cover;
+    height: 80vh;
     display: flex;
-    list-style: none;
+    justify-content: center;
+    flex-direction: column;
 }
 
 li{
@@ -45,7 +75,7 @@ ul{
 .particion{
     display: inline;
 }
-*/
+
 
 
 
