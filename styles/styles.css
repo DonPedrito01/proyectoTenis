@@ -14,164 +14,122 @@ paleta de colores
 
 */
 
-/* 
 *{
     margin:0;
     padding: 0;
     box-sizing: border-box;
     font-family: "Poppins";
-    color:#595959;
+}
+body{
+    height: 100vh;
+    background-color: #F0F2DC;
 }
 
 .header{
-    height: 100%;
-    padding: 2% auto;
+    width: 100%;
     background-color: #6089BF;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+    justify-content: space-around;
     color: #f2f2f2;
 
-    ul{
-        list-style: none;
+    .logo{
+        width: 10%;
+        img{
+            width: 100%;
+        }
+    }
+    nav{
+        width: 78%;
+    }
+
+    .opciones{
+        list-style-type: none;
         display: flex;
         justify-content: center;
+        color: #f2f2f2;
+    }
+
+    .iconos{
+        width: 10%;
+        display: flex;
+
+        list-style: none;   
     }
 
     li{
         padding: 10px;
+
     }
 
-    a {
-    color: #f2f2f2;
-    
-    }
-    
-    /* a:link {
+    a{
+        text-decoration: none;
         color: #f2f2f2;
     }
-    
-    a:visited {
-        color:
-    }
-    
-    a:focus {
-    }
-    
-    a:hover {
-    }
-    
-    a:active {
-    } */
-
-    .titulo{
-        font-size: 2.5rem;
-        text-align: center;
-        color: #f2f2f2;
-    }
-    
 }
 
-.fondo{
-    background-image: linear-gradient(rgba(5,7,12,0.75), rgba(5,7,12,0.75)),
-    url(../assets/img/105603535_286485952470704_5507790349167209405_n.png);
-
-    background-size: cover;
-    height: 80vh;
+.inicio{
+    padding: 2%;
     display: flex;
     justify-content: center;
     flex-direction: column;
     align-items: center;
 
-    h2, h3{
-        color: #f2f2f2;
+    .text-inicio{
+        text-align: center;
     }
 
-    button{
-        width: 20%;
-        padding: 10px;
-    }
-}
-
-
-.main{
-    
-    background-color: #F0F2DC;
-    height: 100%;
-
-    li{
-        list-style: none;
-        padding: 30px;
-        margin: 10px;
-        background-color:#F2F2F2;
-        border: 1px solid black;
+    h1{
+        font-size: 2.7rem;
     } 
 
-}
-
-
-
-
-
-section{
-    text-align: center;
-}
-
-ul{
-    display: flex;
-    justify-content: center;
-}
-
-.particion{
-    display: inline;
-}
-
-.footer{
-    background-color: #9CB6D9 ;
-
-    li{
-        list-style: none;
+    p{
+        font-size: 1.3rem;
     }
-} */
-
-*{
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+    
 }
 
-body{
-    width: 100%;
-    overflow: hidden;
+.container{
+    margin: 1%;
     position: relative;
-}
-
-section{
-    width: 100%;
-    height: 100vh;
+    width: 600px;
+    height: 350px;
     overflow: hidden;
-    display: flex;
-    justify-content: center;
-}
-
-#img-1{
-    position:absolute;
+    background-color: #f2f2f2;
+}    
+    
+#img-2, #img-1 {
+    position: absolute;
     top: 0;
     left: 0;
-    width: 50%;
-    height: 100%;
-    background: url(../assets/img/air_force_1_reducido_6003.jpg) center no-repeat fixed;
-    background-size: cover ;
-    z-index: 1;
-}
-
-#img-2{
     width: 100%;
     height: 100%;
-    /* position: fixed; */
-    background: url(../assets/img/JJK_full_extizq.jpg) center no-repeat ;
     background-size: cover;
-    z-index: 1;
 }
-
-
+    
+#img-2 {
+    background-image: url('../assets/img/air_force_1_reducido_6003.jpg');
+}
+    
+#img-1 {
+    background-image: url('../assets/img/JJK_full_extizq.jpg');
+    width: 100%; /* Mitad de la imagen visible al inicio */
+}
+    
+#slider {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: 10px;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.8);
+    border: 1px solid #595959;
+    cursor: ew-resize;
+    border-radius: 5px;
+    transform: translateX(-50%);
+}
 
 
 
