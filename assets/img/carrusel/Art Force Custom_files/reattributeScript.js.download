@@ -1,0 +1,651 @@
+function getUserTimezone() {
+  try {
+    if (Intl && Intl.DateTimeFormat) {
+      return Intl.DateTimeFormat().resolvedOptions().timeZone;
+    } else {
+      // Fallback mechanism: Return a default timezone or ask the user
+      return "UTC"; // Example default
+    }
+  } catch (error) {
+    console.log("error collecting tz", error);
+  }
+}
+
+// }
+
+function convertDateToUTC(date) {
+  return new Date(
+    date.getUTCFullYear(),
+    date.getUTCMonth(),
+    date.getUTCDate(),
+    date.getUTCHours(),
+    date.getUTCMinutes(),
+    date.getUTCSeconds(),
+    date.getUTCMilliseconds()
+  );
+}
+
+function getSubstringBetween(n, t, e) {
+  if ("" == n) return "";
+  var i = n.indexOf(t);
+  if (!(i >= 0)) return "";
+  if (((n = n.substring(i + t.length)), e)) {
+    if (!((i = n.indexOf(e)) >= 0)) return "";
+    n = n.substring(0, i);
+  }
+  return n;
+}
+
+function getCookie(name) {
+  try {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop().split(";").shift();
+    return "";
+  } catch (error) {
+    return "";
+  }
+}
+
+// Function that persists data for both server-side and a client-side.
+function setSessionCookie(cookieName, cookieValue) {
+  try {
+    // Format cookie string without specifying expiration date
+    const cookieString =
+      cookieName + "=" + encodeURIComponent(cookieValue) + "; path=/";
+
+    // Set the cookie
+    document.cookie = cookieString;
+  } catch (err) {
+    console.log(err);
+  }
+}
+
+function generateUUID() {
+  let d = Date.now(); // Timestamp
+  let d2 = 0;
+
+  try {
+    if (typeof performance !== "undefined" && performance.now) {
+      d2 = performance.now() * 1000; // Time in microseconds since page-load
+    }
+
+    return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(
+      /[xy]/g,
+      function (c) {
+        let r = Math.random() * 16; // Random number between 0 and 16
+        if (d > 0) {
+          // Use timestamp until depleted
+          r = (d + r) % 16 | 0;
+          d = Math.floor(d / 16);
+        } else {
+          // Use microseconds since page-load if supported
+          r = (d2 + r) % 16 | 0;
+          d2 = Math.floor(d2 / 16);
+        }
+        return (c === "x" ? r : (r & 0x3) | 0x8).toString(16);
+      }
+    );
+  } catch (err) {
+    // Fallback to timestamp if performance.now is not supported or an error occurs
+    return timestamp.toString(16);
+  }
+}
+
+// Generate a unique ID if none exists but if it does, use the existing
+// This identifier serves as an additional mechanism to identify the user, particularly useful if the IP address is inaccurate or unavailable.
+function generateOrGetUUID() {
+  try {
+    // First check URL parameters for trueroas_cid
+    const urlParams = new URLSearchParams(window.location.search);
+    const urlCid = urlParams.get("trueroas_cid");
+
+    if (urlCid) {
+      // If found in URL, store it and return
+      localStorage.setItem("trueroas_cid", urlCid);
+      setSessionCookie("trueroas_cid", urlCid);
+      return urlCid;
+    }
+
+    // Check cookie
+    const cookieCid = getCookie("trueroas_cid");
+    if (cookieCid) {
+      localStorage.setItem("trueroas_cid", cookieCid);
+      return cookieCid;
+    }
+
+    // Check localStorage
+    let cid = localStorage.getItem("trueroas_cid");
+    if (!cid) {
+      cid = generateUUID();
+      localStorage.setItem("trueroas_cid", cid);
+    }
+    setSessionCookie("trueroas_cid", cid);
+    return cid;
+  } catch (err) {
+    console.error("Error generating or getting UUID:", err);
+    try {
+      let cid = generateUUID();
+      localStorage.setItem("trueroas_cid", cid);
+      setSessionCookie("trueroas_cid", cid);
+      return cid;
+    } catch (err) {
+      console.error("Error getting UUID:", err);
+      return "";
+    }
+  }
+}
+
+function getUrlParameter(url, parameter) {
+  try {
+    const regex = new RegExp("[?&]" + parameter + "=([^&#]*)", "i");
+    const results = regex.exec(url);
+    return results ? decodeURIComponent(results[1]) : null;
+  } catch (error) {
+    return null;
+  }
+}
+
+function getShopifyCartToken() {
+  try {
+    const cartToken =
+      localStorage.getItem("cartToken") ||
+      localStorage.getItem("trackedSourceId");
+
+    // Ensures the string meets the specific criteria of starting with certain character(s)
+    // followed by a 32-character hexadecimal sequence. Because in other cases, the token is encoded in different ways
+    const regex = /^([a-z]{2}|\d{2}|[a-z]\d|\d[a-z])-[0-9a-f]{32}$/i;
+    return regex.test(cartToken) ? cartToken : "";
+  } catch (err) {
+    console.error("Error getting cart token:", err);
+    return "";
+  }
+}
+
+function isLandingPage() {
+  try {
+    // Check if we've recorded this session already
+    const sessionRecorded = sessionStorage.getItem("trueroas_session_started");
+
+    if (!sessionRecorded) {
+      // First page view in this session
+      sessionStorage.setItem("trueroas_session_started", "true");
+      return true;
+    }
+
+    // If we have a referrer, double check if it's external
+    if (document.referrer) {
+      const referrerDomain = new URL(document.referrer).hostname;
+      const currentDomain = window.location.hostname;
+      return referrerDomain !== currentDomain;
+    }
+
+    // Not first page view in session
+    return false;
+  } catch (error) {
+    console.log("Error checking landing page:", error);
+    return false;
+  }
+}
+
+async function reroasq(initial, customConversion = {}) {
+  try {
+    console.log("Running", window?.location?.href);
+    if (
+      (("complete" !== document?.readyState &&
+        "interactive" !== document?.readyState) ||
+        initial) &&
+      !(window.Shopify && window.Shopify.checkout)
+    ) {
+      return setTimeout(reroasq, 1000);
+    }
+    console.log(
+      "TrueROAS: Want to stop wasting money on ads and start scaling? Visit us at https://trueroas.com/why-true-roas and get your tracking on track."
+    );
+    if (!window._reroas.sessionId)
+      window._reroas.sessionId = Math.random().toString(36).slice(2);
+    console.log("Started true roas session:", window._reroas.sessionId);
+    let scriptEventName = window._reroas.find(([key, val]) => key === "event");
+    if (scriptEventName)
+      scriptEventName = scriptEventName?.length && scriptEventName[1];
+
+    let reroasPixelId = window._reroas.find(([key, val]) => key === "pixelId");
+    if (reroasPixelId?.length) {
+      reroasPixelId = reroasPixelId[1];
+    } else {
+      return console.log("TrueROAS: Error - No pixel id");
+    }
+
+    // manualOrder
+    const scriptOrderId = window._reroas.find(
+      ([key, val]) => key === "orderId"
+    );
+    const manualOrderId = scriptOrderId ? scriptOrderId[1] : null;
+    const scriptValue = window._reroas.find(([key, val]) => key === "value");
+    const manualValue = scriptValue ? scriptValue[1] : 0;
+    const scriptCurrency = window._reroas.find(
+      ([key, val]) => key === "currency"
+    );
+    const manualCurrency = scriptCurrency ? scriptCurrency[1] : "";
+
+    // end manualOrder
+    // does not become an object down there...
+    const eventID = generateUUID();
+    let noteAttributes = {};
+    if (window?.Shopify?.checkout?.note_attributes) {
+      window?.Shopify?.checkout?.note_attributes?.map(a => {
+        if (a.name.includes("fbp-clientID")) {
+          noteAttributes.fbp = a.value;
+        }
+        if (a.name.includes("segment-clientID")) {
+          noteAttributes.segment = a.value;
+        }
+        if (a.name.includes("google-clientID")) {
+          noteAttributes.ga = a.value;
+        }
+      });
+    }
+
+    // "https://www.facebook.com/tr/?id=2327294277407610&ev=PageView&dl=https%3A%2F%2Fboxbollen.co.uk%2F&rl=&if=false&ts=1718182117368&sw=1710&sh=1107&v=2.9.157&r=stable&a=shopify&ec=0&o=4126&fbp=fb.2.1713178957964.2096396896&ler=empty&it=1718182117133&coo=false&eid=sh-0ba27dda-8EBF-4108-598F-A242054FB262&cdl=&rqm=GET",
+    //   "https://www.facebook.com/privacy_sandbox/pixel/register/trigger/?id=2327294277407610&ev=PageView&dl=https%3A%2F%2Fboxbollen.co.uk%2F&rl=&if=false&ts=1718182117368&sw=1710&sh=1107&v=2.9.157&r=stable&a=shopify&ec=0&o=4126&fbp=fb.2.1713178957964.2096396896&ler=empty&it=1718182117133&coo=false&eid=sh-0ba27dda-8EBF-4108-598F-A242054FB262&cdl=&rqm=FGET";
+
+    // get [em] from facebook tracking on purchase and you will get a good email for superkey
+
+    const relevantPerformances = performance
+      .getEntriesByType("resource")
+      .filter(
+        n => n?.name?.includes("facebook.com") && n?.name?.includes("eid=")
+      );
+
+    // const capiData = relevantPerformances.map(({ name }) => ({
+    //   ev: getUrlParameter(name, "ev") || null,
+    //   eid: getUrlParameter(name, "eid") || null,
+    //   id: getUrlParameter(name, "id") || null
+    // }))
+
+    const uniqueValues = [];
+    const capiData = [];
+
+    relevantPerformances.forEach(({ name }) => {
+      const ev = getUrlParameter(name, "ev") || null;
+      const eid = getUrlParameter(name, "eid") || null;
+      const id = getUrlParameter(name, "id") || null;
+
+      const uniqueCheck = eid || ev;
+
+      if (uniqueCheck && uniqueValues.indexOf(uniqueCheck) === -1) {
+        uniqueValues.push(uniqueCheck);
+        capiData.push({ ev, eid, id });
+      }
+    });
+
+    const isDev = false;
+    // const baseUrl = isDev ? "http://localhost:3000" : "https://app.trueroas.io";
+    // const route = "/api/attr";
+
+    const url = isDev
+      ? "http://127.0.0.1:5001/roisushi/us-central1/attr" ||
+        "http://localhost:3000/api/attr"
+      : "https://us-central1-roisushi.cloudfunctions.net/attr";
+
+    // const baseUrl = isDev ? "http://127.0.0.1:5001" : "https://app.trueroas.io";
+    // const route = "/roisushi/us-central1/attr";
+
+    const xhr = new XMLHttpRequest();
+    xhr.open("POST", url);
+
+    xhr.setRequestHeader("Accept", "application/json");
+    xhr.setRequestHeader("Content-Type", "application/json");
+    xhr.onreadystatechange = function () {
+      if (xhr.readyState === 4) {
+        console.log("trueroas: ", reroasPixelId, xhr.status);
+        // console.log("res", xhr.responseText);
+      }
+    };
+    // const scriptCollection = document.getElementsByTagName("script");
+    // const scripts = [].slice.call(scriptCollection);
+    // const fbqScripts = scripts.find(
+    //   asd => asd.outerHTML && asd.outerHTML.includes("fbq")
+    // );
+    // const fbqArguments = getSubstringBetween(
+    //   fbqScripts ? fbqScripts.outerHTML : "",
+    //   "fbq('track',",
+    //   ")"
+    // );
+
+    // get [em] from facebook tracking on purchase and you will get a good email for superkey
+    // const relevantPerformances = performance
+    //   .getEntriesByType("resource")
+    //   .filter(
+    //     n =>
+    //       n.name.includes("id=") &&
+    //       (n.name.includes("facebook.com/tr") ||
+    //         n.name.includes("googletag") ||
+    //         n.name.includes("google-analytics"))
+    // Get event ID for CAPI
+    //     ||
+    // (n.name.includes("facebook") &&
+    //   n.name.includes("/tr") &&
+    //   n.name.includes("eid="))
+    // );
+    // const performanceNames = relevantPerformances.map(asd => asd.name);
+    // Get event ID for CAPI
+    // const eventIdPerformanceUrl = performanceNames.find(p =>
+    //   p.includes("eid=")
+    // );
+    // const eventIDMatches = eventIdPerformanceUrl.match(/eid=([^&]*)/);
+    // const eventID = eventIDMatches[1];
+    // const trackingUrls = performanceNames
+    //   .map(a => {
+    //     const urlRegexp =
+    //       /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&\/\/=]*)/;
+    //     const isUrl = (a || "").toString().match(urlRegexp);
+    //     const url = new URL(isUrl ? a : "http://none.com");
+    //     const params = new URLSearchParams(url.search);
+    //     //const allEid = params.getAll('eid')
+    //     const allEv = params.getAll("ev");
+    //     const allT = params.getAll("t");
+    //     const allTi = params.getAll("ti");
+    //     return [...allTi, ...allT, ...allEv].filter(asd => asd);
+    //   })
+    //   .join()
+    //   .split(",");
+
+    const isShopifyPurchase = Boolean(
+      window.location.pathname.match(
+        /(checkouts|checkout)\/(.+)\/(thank_you|post_purchase)/
+      ) ||
+        (window.Shopify &&
+          window.Shopify.checkout &&
+          window.Shopify.checkout.orderId)
+    );
+    const isCheckoutAndThanks = Boolean(
+      window.location.pathname.match(
+        /^.*?\b(checkouts|checkout|purchase|afrekenen)\b.*?\b(thanks|thank_you|thankyou|thank-you|post_purchase|post-purchase|postpurchase|purchase|order-received)\b.*?$/
+      )
+    );
+    //const reroasPurchase = Boolean(window.location.pathname.match(/reroas/));
+    const isCustomPurchase = Boolean(
+      window._reroas.custom &&
+        window.location.pathname.match(new RegExp(window._reroas.custom))
+    );
+
+    const wooCommerceOrderDetails = {};
+    try {
+      const htmlOrderDetails = document.getElementsByClassName(
+        "woocommerce-thankyou-order-details"
+      );
+      if (htmlOrderDetails && htmlOrderDetails.length) {
+        const orderDetailsText = htmlOrderDetails[0].innerText;
+        const splittedOrderDetailsText = orderDetailsText.split(/[:\n]+/);
+        splittedOrderDetailsText.map((o, i) => {
+          const lowerCaseKey = o.toLowerCase().trim();
+          const valueFromString = splittedOrderDetailsText[i + 1]
+            ? splittedOrderDetailsText[i + 1].trim()
+            : "";
+
+          if (lowerCaseKey === "order number") {
+            wooCommerceOrderDetails.orderNumber = valueFromString;
+          }
+
+          if (lowerCaseKey === "date") {
+            wooCommerceOrderDetails.date = new Date(valueFromString);
+          }
+          if (lowerCaseKey === "total") {
+            // const currencyVsTotal = valueFromString;
+            wooCommerceOrderDetails.currency =
+              valueFromString.replace(/\s/g, "").split(/[0-9]/)[0] || "";
+            wooCommerceOrderDetails.total =
+              valueFromString.replace(/\s/g, "").split(/[0-9]/)[1] || "";
+          }
+        });
+      }
+    } catch (error) {
+      console.log("Error calculating WooCommerce order details");
+    }
+
+    // const date = new Date();
+    // const _pinterest_sess = getCookie("_pinterest_sess");
+    const _ga = getCookie("_ga");
+    const _pinterest_ct = getCookie("_pinterest_ct");
+    const _pinterest_ct_rt = getCookie("_pinterest_ct_rt");
+    const ttp = getCookie("ttp");
+    const _ttp = getCookie("_ttp");
+    const gid = getCookie("_gid");
+    const t_gid = getCookie("t_gid");
+    const auid = getCookie("auid");
+    const _pin_unauth = getCookie("_pin_unauth");
+    const RoktRecogniser = getCookie("RoktRecogniser");
+    // const __kla_id = getCookie("__kla_id");
+    const _gcl_au = getCookie("_gcl_au");
+    const _shopify_y = getCookie("_shopify_y");
+    const _y = getCookie("_y");
+    const fbp = getCookie("_fbp") || noteAttributes.fbp;
+    const fbc = getCookie("_fbc");
+    const timezone = getUserTimezone();
+    const cartToken = getCookie("cart") || getShopifyCartToken();
+    const customerTrueroasId = generateOrGetUUID();
+
+    const data = {
+      ...(((window && window.Shopify && window.Shopify.checkout) ||
+        manualOrderId ||
+        (wooCommerceOrderDetails.orderNumber &&
+          +wooCommerceOrderDetails.total > 0)) && {
+        checkout: {
+          ...wooCommerceOrderDetails,
+          id:
+            manualOrderId ||
+            customConversion.id ||
+            wooCommerceOrderDetails.orderNumber,
+          ...(manualValue && { value: manualValue || customConversion.value }),
+          ...(manualCurrency && {
+            currency: manualCurrency || customConversion.currency
+          }),
+          ...customConversion,
+          ...(window.Shopify && window.Shopify.checkout)
+        }
+      }),
+      ...(timezone && { timezone }),
+      sessionId: window._reroas.sessionId,
+      // fbqArguments,
+      // trackingUrls,
+      // ...(window?.orderIdsIntervalled?.length && {
+      //   orderIdsIntervalled: window.orderIdsIntervalled
+      // }),
+      //isCheckout: isCheckouts || isCheckouts,
+      pixelId: reroasPixelId,
+      isPurchase:
+        isShopifyPurchase ||
+        isCheckoutAndThanks ||
+        (window._reroas.custom && isCustomPurchase) ||
+        manualOrderId,
+      documentReferrer: document.referrer,
+      userAgent: window.navigator.userAgent,
+      locationHref: window.location.href,
+      isLandingPage: isLandingPage(),
+      // cookies
+      // ...(_pinterest_sess && { _pinterest_sess }),
+      ...(_ga && { _ga }),
+      ...(_pinterest_ct && { _pinterest_ct }),
+      ...(_pinterest_ct_rt && { _pinterest_ct_rt }),
+      ...((ttp || _ttp) && { ttp: ttp || _ttp }),
+      ...(gid && { gid }),
+      ...(t_gid && { t_gid }),
+      ...(auid && { auid }),
+      ...(_pin_unauth && { _pin_unauth }),
+      ...(RoktRecogniser && { RoktRecogniser }),
+      // ...(__kla_id && { __kla_id }),
+      ...(_gcl_au && { _gcl_au }),
+      ...(_shopify_y && { _shopify_y }),
+      ...(_y && { _y }),
+      ...(fbp && { fbp }),
+      ...(fbc && { fbc }),
+      ...(cartToken && { cartToken }),
+      ...(capiData?.length && { capiData }),
+      // cookies
+      // external_id: external_id,
+      event_id: eventID,
+      customerTrueroasId
+      // ...(facebookPixel?.eventId && { facebookPixel })
+      // event_name: manualOrderId ? "Purchase" : scriptEventName || "PageView",
+      // ...((isShopifyPurchase ||
+      //   isCheckoutAndThanks ||
+      //   (window._reroas.custom && isCustomPurchase)) && {
+      //   true_event_name: "Purchase"
+      // }),
+      // utcTime: convertDateToUTC(date),
+      // event_time: date?.getTime(),
+      // clientTimezone: date?.getTimezoneOffset() / 60
+    };
+    window._reroas.map(([key, val]) => (data[key] = val));
+    const stringifiedData = JSON.stringify(data);
+    // console.log(`Sending`, data);
+    xhr.send(stringifiedData);
+  } catch (err) {
+    console.log("A wild error appeared!", err);
+
+    const errorUrl = "https://app.trueroas.io/api/err";
+
+    const xhr = new XMLHttpRequest();
+    xhr.open("POST", errorUrl);
+
+    xhr.setRequestHeader("Accept", "application/json");
+    xhr.setRequestHeader("Content-Type", "application/json");
+
+    xhr.onreadystatechange = function () {
+      if (xhr.readyState === 4) {
+        console.log(xhr.status);
+        console.log(xhr.responseText);
+      }
+    };
+    let errorPixelId = "";
+    try {
+      errorPixelId = window._reroas.find(([key, val]) => key === "pixelId")[1];
+    } catch (error) {
+      errorPixelId = "error getting pixel";
+    }
+    const errorObject = {
+      ...err,
+      created: new Date().getTime(),
+      createdAt: new Date(),
+      href: window.location.href || "",
+      documentReferrer: document.referrer,
+      userAgent: window.navigator.userAgent,
+      reroasMessage: "error in reattributeScript.js",
+      reroasPixelId: errorPixelId
+    };
+    const stringifiedData = JSON.stringify(errorObject);
+    xhr.send(stringifiedData);
+  }
+}
+
+(function () {
+  var pushState = history.pushState;
+  var replaceState = history.replaceState;
+
+  history.pushState = function () {
+    pushState.apply(history, arguments);
+    window.dispatchEvent(new Event("pushstate"));
+    window.dispatchEvent(new Event("locationchange"));
+  };
+
+  // history.replaceState = function () {
+  //   replaceState.apply(history, arguments);
+  //   window.dispatchEvent(new Event("replacestate"));
+  //   window.dispatchEvent(new Event("locationchange"));
+  // };
+
+  window.addEventListener("popstate", function () {
+    window.dispatchEvent(new Event("locationchange"));
+  });
+})();
+// Example usage:
+
+window.addEventListener("locationchange", function () {
+  reroasq();
+});
+reroasq(true);
+
+// Make getTrueroasCid available globally with safety checks
+(function () {
+  // Define the function first
+  function getTrueroasCidImpl() {
+    try {
+      // First check URL parameters for trueroas_cid
+      const urlParams = new URLSearchParams(window.location.search);
+      const urlCid = urlParams.get("trueroas_cid");
+
+      if (urlCid) {
+        // If found in URL, store it and return
+        try {
+          localStorage.setItem("trueroas_cid", urlCid);
+          setSessionCookie("trueroas_cid", urlCid);
+        } catch (storageErr) {
+          // Continue even if storage fails
+          console.error("Error storing CID:", storageErr);
+        }
+        return urlCid;
+      }
+
+      // Check cookie
+      const cookieCid = getCookie("trueroas_cid");
+      if (cookieCid) {
+        try {
+          localStorage.setItem("trueroas_cid", cookieCid);
+        } catch (storageErr) {
+          // Continue even if storage fails
+        }
+        return cookieCid;
+      }
+
+      // Check localStorage
+      let cid;
+      try {
+        cid = localStorage.getItem("trueroas_cid");
+      } catch (storageErr) {
+        // Continue even if storage access fails
+      }
+
+      if (cid) {
+        try {
+          setSessionCookie("trueroas_cid", cid);
+        } catch (cookieErr) {
+          // Continue even if cookie setting fails
+        }
+        return cid;
+      }
+
+      // If no existing CID is found, generate a new one
+      cid = generateUUID();
+      try {
+        localStorage.setItem("trueroas_cid", cid);
+        setSessionCookie("trueroas_cid", cid);
+      } catch (storageErr) {
+        // Continue even if storage fails
+      }
+      return cid;
+    } catch (err) {
+      console.error("Error getting TrueROAS CID:", err);
+      try {
+        // Fallback to generating a new UUID if there's an error
+        return generateUUID();
+      } catch (fallbackErr) {
+        console.error("Error generating fallback CID:", fallbackErr);
+        return "";
+      }
+    }
+  }
+
+  // Safely add to window object
+  try {
+    // Check if window exists (it should, but being extra cautious)
+    if (typeof window !== "undefined") {
+      // Only set if not already defined
+      if (typeof window.getTrueroasCid === "undefined") {
+        window.getTrueroasCid = getTrueroasCidImpl;
+      }
+    }
+  } catch (windowErr) {
+    console.error("Error setting global getTrueroasCid function:", windowErr);
+  }
+})();

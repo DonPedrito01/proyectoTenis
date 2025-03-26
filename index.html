@@ -13,21 +13,23 @@
     
 <header class="header">
     <div class="logo">
-        <img src="./assets/img/Logo 2.png" alt="logo sneakart">
+        <img src="./assets/img/logos/Logo 2.png" alt="logo sneakart">
     </div>
     <nav>
         <ul class="opciones">
-            <li><a href="">INICIO</a></li>
-            <li><a href="">NOSOTROS</a></li>
-            <li><a href="">TIENDA</a></li>
-            <li><a href="">CONTACTO</a></li>
+            <li><a href="./index.html">INICIO</a></li>
+            <li><a href="./pages/inventario.html">INVENTARIO</a></li>
+            <li><a href="./pages/nosotros.html">NOSOTROS</a></li>
+            <li><a href="./pages/contacto.html">CONTACTO</a></li>
         </ul>
     </nav>
     <ul class="iconos">
-        <li><a href="#"><i class="fa-solid fa-person"></i></a></li>
-        <li><a href="#"><i class="fa-solid fa-bag-shopping"></i></a></li>
+        <li><a href="#"><i class="fa-solid fa-user"></i></a></li>
+        <li><a href="#"><i class="fa-solid fa-cart-shopping"></i></a></li>
     </ul>
 </header>
+
+<main class="main" id="app">
 
 <section class="inicio">
     <article class="text-inicio">
@@ -43,54 +45,132 @@
     </article>
 </section>
 
-<main class="main">
+<article class="carrusel-contenedor">
+<section class="carrusel-texto">
+  <h2>De temporada</h2>
+  <button class="carousel-button prev" disabled>&#10094;</button>
+
+  <button class="carousel-button next">&#10095;</button>
+</section>
+<div class="carousel-container">
+  
+  
+  <div class="carousel-track">
+      <div class="carousel-slide">
+          <img src="./assets/img/carrusel/air-force-1-x-deadpool-y-wolverine-851073.png" alt="Imagen 1">
+          <h4>Air Force 1 </h4>
+          <p>Deadpool y Wolverine</p>
+          <p>$20.000</p>
+      </div>
+      <div class="carousel-slide">
+          <img src="./assets/img/carrusel/air-force-1-x-goku-full-348426.png" alt="Imagen 2">
+          <h4>Air Force 1 </h4>
+          <p>Dragon Ball</p>
+          <p>$27.000</p>
+      </div>
+      <div class="carousel-slide">
+          <img src="./assets/img/carrusel/air-force-1-x-goku-full-951135.png" alt="Imagen 3">
+          <h4>Air Force 1 </h4>
+          <p>Dragon Ball</p>
+          <p>$27.000</p>
+        </div>
+      <div class="carousel-slide">
+          <img src="./assets/img/carrusel/air-force-1-x-nanami-835719.png" alt="Imagen 4">
+          <h4>Air Force 1 </h4>
+          <p>JJK nanami</p>
+          <p>$40.000</p>
+      </div>
+      <div class="carousel-slide">
+          <img src="./assets/img/carrusel/air-force-1-x-chucky-543858.jpg" alt="Imagen 5">
+          <h4>Air Force 1 </h4>
+          <p>Chucky</p>
+          <p>$32.000</p>
+      </div>
+      <div class="carousel-slide">
+          <img src="./assets/img/carrusel/air-force-1-x-sukuna-100347.webp" alt="Imagen 6">
+          <h4>Air Force 1 </h4>
+          <p>JJK sukuna</p>
+          <p>$46.000</p>
+      </div>
+      <div class="carousel-slide">
+          <img src="./assets/img/carrusel/air-force-1-x-itachi-naruto-334225.webp" alt="Imagen 7">
+          <h4>Air Force 1 </h4>
+          <p>Itachi Naruto</p>
+          <p>$48.000</p>
+      </div>
+  </div>
+  
+</div>
+</article>
+</main>   
+
+<footer class="footer">
+    <!-- Sección de redes sociales -->
+    <div class="media">
+      <h4>Síguenos</h4>
+      <ul>
+        <li><a href="https://www.instagram.com" target="_blank"><i
+              class="fab fa-instagram"></i></a></li>
+        <li><a href="https://twitter.com" target="_blank"><i
+              class="fab fa-twitter"></i></a></li>
+        <li><a href="https://wa.me/30245875215" target="_blank"><i
+              class="fab fa-whatsapp"></i></a></li>
+        <li><a href="https://www.facebook.com" target="_blank"><i
+              class="fab fa-facebook"></i></a></li>
+      </ul>°
+    </div>
+
+    <!-- Sección de información de contacto y dirección -->
+    <div class="info">
+      <h4>Información de Contacto</h4>
+      <address>
+        <ul>
+          <li>Ubicación: Cl 26 #29-14</li>
+          <li>Teléfono: 30245875215</li>
+          <li>Email: sneakart@gmail.com</li>
+        </ul>
+      </address>
+    </div>
+
+    <div class="horario">
+      <h4>Horario de atención</h4>
+      <p>Lunes a Viernes: 9:00 AM - 6:00 PM</p>
+      <p>Sábado: 10:00 AM - 2:00 PM</p>
+      <p>Domingo: Cerrado</p>
+    </div>
+
+    <!-- Sección de detalles legales -->
+    <div class="legal">
+      <h4>Detalles Legales</h4>
+      <ul>
+        <li><a href="/politica-privacidad">Política de Privacidad</a></li>
+        <li><a href="/terminos-condiciones">Términos y Condiciones</a></li>
+        <li><a href="/cookies">Política de Cookies</a></li>
+      </ul>
+    </div>
+
+    <!-- Métodos de Pago Aceptados -->
+    <div class="payment">
+      <h4>Métodos de Pago</h4>
+      <section class="payment-methods">
+        <img src="./assets/img/pagos/visa.png" alt="Visa">
+        <img src="./assets/img/pagos/mastercard.png" alt="Mastercard">
+        <img src="./assets/img/pagos/Paypal.png" alt="PayPal">
+        <img src="/assets/img/pagos/pse.png" alt="Pse">
+      </section>
+    </div>
+
+    <!-- Copyright -->
+    <div class="copyright">
+      <p>&copy; 2025 SnakeArt. Todos los derechos reservados.</p>
+    </div>
+  </footer>
 
 
-    <article>
-    </article>
-
-    
-    
-    <footer class="footer">
-        <section>
-            <article>
-                <ul>
-                    <li><a href="#" aria-label="carrito de compras"></a><p><i class="fa-brands fa-x-twitter"></i></p></a></li>
-                    <li><a href="#"><p><i class="fa-brands fa-instagram"></i></p></a></li>
-                    <li><a href="#"><p><i class="fa-brands fa-instagram"></i></p></a></li>
-                    <li><a href="#"><p><i class="fa-brands fa-linkedin"></i></p></a></li>
-                </ul>  
-            </article>
-            <article>
-                <ul>
-                    <li><a href="#"><p>Ubicacion</p></a></li>
-                    <li><a href="#"><p>Contacto</p></a></li>
-                    <li><a href="#"><p>3021549813</p></a></li>
-                    <li><a href="#"><p>FAQ's</p></a></li>
-                </ul>        
-            </article>
-        
-            <article>
-                <ul>
-                    <li><a href="#"><p>Formas de pago</p></a></li>
-                    <li><a href="#"><p>Formas de envio</p></a></li>
-                    <li><a href="#"><p>Preguntas frecuentes</p></a></li>
-                    <li><a href="#"><p>FAQ's</p></a></li>
-                </ul>
-            </article>
-            <article>
-                <ul>
-                    <li><a href="#"><p>Politicas</p></a></li>
-                    <li><a href="#"><p>Terminos y condiciones</p></a></li>
-                </ul>    
-            </article>
-        </section>
-    </footer>
-
-</main>
-
+    <script src="./dist/carrusel.js"></script>
     <script src="https://kit.fontawesome.com/ad3e63f79e.js" crossorigin="anonymous"></script>
     <script src="/dist/transicion.js"></script>
-
+    <script src="/dist/app.js"></script>
+   
 </body> 
 </html>
